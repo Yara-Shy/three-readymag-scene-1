@@ -2,13 +2,12 @@ body, html, #app {
   margin: 0;
   width: 100%;
   height: 100%;
- 
-
 }
 
 body {
   touch-action: none;
 }
+
 
 #canvas {
   position: fixed;
@@ -17,4 +16,5 @@ body {
   bottom: 0;
   left: 0;
   overflow: hidden;
+  filter: invert(1);
 }
