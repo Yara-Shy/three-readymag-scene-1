@@ -15,8 +15,8 @@
     <canvas id="canvas"></canvas>
   </div>
 
-  <!-- Blur canvas -->
-  <canvas id="blur-canvas" style="
+  <!-- Packed canvas: тут зберігається упакований фон для SVG фільтра -->
+  <canvas id="packed-canvas" style="
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
@@ -24,56 +24,101 @@
     z-index: 5;
   "></canvas>
 
-  <!-- Mirror canvas -->
-  <canvas id="mirror-canvas" style="
-    position: fixed;
-    pointer-events: none;
-    z-index: 6;
-    opacity: 0.45;
-  "></canvas>
+  <!-- SVG фільтри liquid glass (з коду cubiq) -->
+  <svg width="0" height="0" color-interpolation-filters="sRGB" style="position:absolute">
 
-  <!-- SVG маска -->
-  <svg id="gt-defs"
-       style="position:absolute;top:0;left:0;pointer-events:none;overflow:visible;width:0;height:0;"
-       xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <mask id="gt-mask" maskUnits="userSpaceOnUse">
-        <text id="gt-mask-text" fill="white"
-          font-family="'futura-pt', sans-serif"
-          font-weight="700">Design</text>
-      </mask>
-    </defs>
+    <filter id="pack-lower">
+      <feColorMatrix type="matrix" values="
+        0.00392156862745098 0 0 0 0
+        0 0.00392156862745098 0 0 0
+        0 0 0.00392156862745098 0 0
+        0 0 0 1 0"/>
+    </filter>
+
+    <filter id="liquid-glass-text" x="-5%" y="-5%" width="110%" height="110%">
+      <feComponentTransfer result="SourceBackground" in="SourceGraphic">
+        <feFuncR type="discrete" tableValues="0.000 0.008 0.016 0.024 0.031 0.039 0.047 0.055 0.063 0.071 0.079 0.087 0.094 0.102 0.110 0.118 0.126 0.134 0.142 0.150 0.157 0.165 0.173 0.181 0.189 0.197 0.205 0.213 0.220 0.228 0.236 0.244 0.252 0.260 0.268 0.276 0.283 0.291 0.299 0.307 0.315 0.323 0.331 0.339 0.346 0.354 0.362 0.370 0.378 0.386 0.394 0.402 0.409 0.417 0.425 0.433 0.441 0.449 0.457 0.465 0.472 0.480 0.488 0.496 0.504 0.512 0.520 0.528 0.535 0.543 0.551 0.559 0.567 0.575 0.583 0.591 0.598 0.606 0.614 0.622 0.630 0.638 0.646 0.654 0.661 0.669 0.677 0.685 0.693 0.701 0.709 0.717 0.724 0.732 0.740 0.748 0.756 0.764 0.772 0.780 0.787 0.795 0.803 0.811 0.819 0.827 0.835 0.843 0.850 0.858 0.866 0.874 0.882 0.890 0.898 0.906 0.913 0.921 0.929 0.937 0.945 0.953 0.961 0.969 0.976 0.984 0.992 1.000"/>
+        <feFuncG type="discrete" tableValues="0.000 0.008 0.016 0.024 0.031 0.039 0.047 0.055 0.063 0.071 0.079 0.087 0.094 0.102 0.110 0.118 0.126 0.134 0.142 0.150 0.157 0.165 0.173 0.181 0.189 0.197 0.205 0.213 0.220 0.228 0.236 0.244 0.252 0.260 0.268 0.276 0.283 0.291 0.299 0.307 0.315 0.323 0.331 0.339 0.346 0.354 0.362 0.370 0.378 0.386 0.394 0.402 0.409 0.417 0.425 0.433 0.441 0.449 0.457 0.465 0.472 0.480 0.488 0.496 0.504 0.512 0.520 0.528 0.535 0.543 0.551 0.559 0.567 0.575 0.583 0.591 0.598 0.606 0.614 0.622 0.630 0.638 0.646 0.654 0.661 0.669 0.677 0.685 0.693 0.701 0.709 0.717 0.724 0.732 0.740 0.748 0.756 0.764 0.772 0.780 0.787 0.795 0.803 0.811 0.819 0.827 0.835 0.843 0.850 0.858 0.866 0.874 0.882 0.890 0.898 0.906 0.913 0.921 0.929 0.937 0.945 0.953 0.961 0.969 0.976 0.984 0.992 1.000"/>
+        <feFuncB type="discrete" tableValues="0.000 0.008 0.016 0.024 0.031 0.039 0.047 0.055 0.063 0.071 0.079 0.087 0.094 0.102 0.110 0.118 0.126 0.134 0.142 0.150 0.157 0.165 0.173 0.181 0.189 0.197 0.205 0.213 0.220 0.228 0.236 0.244 0.252 0.260 0.268 0.276 0.283 0.291 0.299 0.307 0.315 0.323 0.331 0.339 0.346 0.354 0.362 0.370 0.378 0.386 0.394 0.402 0.409 0.417 0.425 0.433 0.441 0.449 0.457 0.465 0.472 0.480 0.488 0.496 0.504 0.512 0.520 0.528 0.535 0.543 0.551 0.559 0.567 0.575 0.583 0.591 0.598 0.606 0.614 0.622 0.630 0.638 0.646 0.654 0.661 0.669 0.677 0.685 0.693 0.701 0.709 0.717 0.724 0.732 0.740 0.748 0.756 0.764 0.772 0.780 0.787 0.795 0.803 0.811 0.819 0.827 0.835 0.843 0.850 0.858 0.866 0.874 0.882 0.890 0.898 0.906 0.913 0.921 0.929 0.937 0.945 0.953 0.961 0.969 0.976 0.984 0.992 1.000"/>
+      </feComponentTransfer>
+
+      <feComponentTransfer in="SourceGraphic">
+        <feFuncR type="discrete" tableValues="0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000"/>
+        <feFuncG type="discrete" tableValues="0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000"/>
+        <feFuncB type="discrete" tableValues="0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000"/>
+      </feComponentTransfer>
+      <feColorMatrix type="luminanceToAlpha"/>
+      <feGaussianBlur stdDeviation="1"/>
+      <feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 2 0"/>
+      <feComposite result="SourceMask"/>
+
+      <!-- Lighting -->
+      <feDiffuseLighting in="SourceMask" diffuseConstant="1" surfaceScale="100">
+        <feDistantLight azimuth="225" elevation="180"/>
+      </feDiffuseLighting>
+      <feColorMatrix type="luminanceToAlpha"/>
+      <feColorMatrix result="side-black" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.9 0"/>
+
+      <feDiffuseLighting in="SourceMask" diffuseConstant="0.52" surfaceScale="100">
+        <feDistantLight azimuth="45" elevation="180"/>
+      </feDiffuseLighting>
+      <feColorMatrix type="luminanceToAlpha"/>
+      <feColorMatrix result="side-yellow" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0"/>
+
+      <feDiffuseLighting in="SourceMask" diffuseConstant="1" surfaceScale="100">
+        <feDistantLight azimuth="315" elevation="180"/>
+      </feDiffuseLighting>
+      <feColorMatrix type="luminanceToAlpha"/>
+      <feColorMatrix result="side-red" values="0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0"/>
+
+      <feDiffuseLighting in="SourceMask" diffuseConstant="1" surfaceScale="100">
+        <feDistantLight azimuth="135" elevation="180"/>
+      </feDiffuseLighting>
+      <feColorMatrix type="luminanceToAlpha"/>
+      <feColorMatrix result="side-green" values="0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0"/>
+
+      <feBlend in="side-green" mode="screen"/>
+      <feBlend in="side-red" mode="screen"/>
+      <feBlend in="side-yellow" mode="screen"/>
+      <feBlend in="side-black" mode="multiply"/>
+
+      <feMorphology result="refraction-thickness" radius="5" operator="dilate"/>
+      <feGaussianBlur result="refraction-smoothness" stdDeviation="5"/>
+      <feComposite result="balls-map" in2="SourceMask" operator="in"/>
+      <feFlood result="normal-bg-color" flood-color="#808000"/>
+      <feComposite result="NormalMapFull" in="balls-map" in2="normal-bg-color" operator="over"/>
+
+      <feDisplacementMap result="displacement" in="SourceBackground" in2="NormalMapFull" scale="120" xChannelSelector="R" yChannelSelector="G"/>
+      <feGaussianBlur result="blur-out" stdDeviation="1" in="displacement"/>
+      <feComponentTransfer result="backdrop-processed">
+        <feFuncR type="linear" slope=".9" intercept="0.05"/>
+        <feFuncG type="linear" slope=".9" intercept="0.05"/>
+        <feFuncB type="linear" slope=".9" intercept="0.05"/>
+      </feComponentTransfer>
+      <feComposite result="balls-final" in2="SourceMask" operator="in"/>
+
+      <!-- Fresnel outline -->
+      <feMorphology in="SourceMask" result="stroke-width" radius="2"/>
+      <feGaussianBlur result="outline-smoothness" stdDeviation="1.5"/>
+      <feComposite result="bg-stroke-raw" in="balls-final" operator="out"/>
+      <feColorMatrix result="bg-stroke" values="2 0 0 0 0.1 0 2 0 0 0.1 0 0 2 0 0.1 0 0 0 0.5 0"/>
+      <feBlend result="outlined-balls" in="balls-final" mode="overlay"/>
+
+      <feDropShadow dx="0" dy="2" stdDeviation="8" flood-opacity=".4"/>
+    </filter>
   </svg>
 
-  <!-- Текст -->
-  <div id="gt-wrap">
-    <div id="gt-spec" style="
-      position: absolute;
-      inset: 0;
-      -webkit-mask: url(#gt-mask);
-      mask: url(#gt-mask);
-      background: linear-gradient(
-        150deg,
-        rgba(255,255,255,0.45) 0%,
-        rgba(255,255,255,0.10) 40%,
-        transparent 58%,
-        rgba(255,255,255,0.06) 100%
-      );
-      pointer-events: none;
-      z-index: 2;
-    "></div>
-
-    <svg id="gt-svg" style="display:block; position:relative; z-index:1;"
-         fill="none" xmlns="http://www.w3.org/2000/svg">
-      <text id="gt-text"
-        font-family="'futura-pt', sans-serif"
-        font-weight="700"
-        fill="rgba(255,255,255,0.0)"
-        stroke="rgba(255,255,255,0.45)"
-        stroke-width="1.5"
-        paint-order="stroke">Design</text>
-    </svg>
-  </div>
+  <!-- SVG текст з liquid glass -->
+  <svg id="gt-svg-outer" style="
+    position: relative;
+    z-index: 10;
+    overflow: visible;
+  " fill="none" xmlns="http://www.w3.org/2000/svg">
+    <text id="gt-text"
+      font-family="'futura-pt', sans-serif"
+      font-weight="700"
+      filter="url(#liquid-glass-text)">Design</text>
+  </svg>
 
   <script>
   (function () {
@@ -83,16 +128,12 @@
     var FONT_STR   = "700 " + FONT_SIZE + "px 'futura-pt', sans-serif";
 
     var srcCanvas    = document.getElementById('canvas');
-    var blurCanvas   = document.getElementById('blur-canvas');
-    var mirrorCanvas = document.getElementById('mirror-canvas');
-    var bctx         = blurCanvas.getContext('2d');
-    var mctx         = mirrorCanvas.getContext('2d');
-
-    var MIRROR_H_RATIO = 0.5; // висота відзеркалення відносно тексту
+    var packedCanvas = document.getElementById('packed-canvas');
+    var pctx         = packedCanvas.getContext('2d');
 
     function resize() {
-      blurCanvas.width  = window.innerWidth;
-      blurCanvas.height = window.innerHeight;
+      packedCanvas.width  = window.innerWidth;
+      packedCanvas.height = window.innerHeight;
     }
     resize();
     window.addEventListener('resize', resize);
@@ -105,104 +146,48 @@
       var TH   = Math.ceil(FONT_SIZE * 1.6);
       var BASE = Math.ceil(FONT_SIZE * 1.1);
 
-      var wrap = document.getElementById("gt-wrap");
-      wrap.style.width  = TW + "px";
-      wrap.style.height = TH + "px";
+      var outerSvg = document.getElementById('gt-svg-outer');
+      outerSvg.setAttribute("width",   TW);
+      outerSvg.setAttribute("height",  TH);
+      outerSvg.setAttribute("viewBox", "0 0 " + TW + " " + TH);
 
-      var svg = document.getElementById("gt-svg");
-      svg.setAttribute("width", TW);
-      svg.setAttribute("height", TH);
-      svg.setAttribute("viewBox", "0 0 " + TW + " " + TH);
-
-      ["gt-text", "gt-mask-text"].forEach(function(id) {
-        var el = document.getElementById(id);
-        el.setAttribute("x", "0");
-        el.setAttribute("y", BASE);
-        el.setAttribute("font-size", FONT_SIZE);
-        el.setAttribute("letter-spacing", LETTER_SPC);
-      });
-
-      var defsSvg = document.getElementById("gt-defs");
-      defsSvg.setAttribute("width", TW);
-      defsSvg.setAttribute("height", TH);
+      var visText = document.getElementById("gt-text");
+      visText.setAttribute("x",              "0");
+      visText.setAttribute("y",              BASE);
+      visText.setAttribute("font-size",      FONT_SIZE);
+      visText.setAttribute("letter-spacing", LETTER_SPC);
+      // Колір тексту — упакований фон буде переданий через fill
+      visText.setAttribute("fill", "white");
     }
 
-    function drawBlur() {
-      var W = blurCanvas.width;
-      var H = blurCanvas.height;
-      bctx.clearRect(0, 0, W, H);
+    // Пакує пікселі canvas у 7-bit формат для SVG фільтра
+    function packAndDraw() {
+      var W = packedCanvas.width;
+      var H = packedCanvas.height;
 
-      var wrap = document.getElementById('gt-wrap');
-      var rect = wrap.getBoundingClientRect();
-
+      // Крок 1: малюємо інвертований tubes canvas у tmp
       var tmp = document.createElement('canvas');
-      tmp.width  = W;
-      tmp.height = H;
+      tmp.width = W; tmp.height = H;
       var tctx = tmp.getContext('2d');
-      tctx.filter = 'blur(14px) invert(1)';
+      tctx.filter = 'invert(1)';
       try { tctx.drawImage(srcCanvas, 0, 0, W, H); } catch(e) {}
 
-      bctx.save();
-      bctx.drawImage(tmp, 0, 0);
-      bctx.globalCompositeOperation = 'destination-in';
-      bctx.font = FONT_STR;
-      bctx.fillStyle = 'white';
-      bctx.letterSpacing = LETTER_SPC + 'px';
-      bctx.fillText(TEXT, rect.left, rect.top + Math.ceil(FONT_SIZE * 1.1));
-      bctx.restore();
+      // Крок 2: пакуємо у 7-bit (ділимо кожен канал на 2 щоб вмістити маску в молодший біт)
+      var imgData = tctx.getImageData(0, 0, W, H);
+      var d = imgData.data;
+      for (var i = 0; i < d.length; i += 4) {
+        d[i]   = (d[i]   >> 1) & 0xFE; // R: верхні 7 біт, молодший = 0 (фон)
+        d[i+1] = (d[i+1] >> 1) & 0xFE; // G
+        d[i+2] = (d[i+2] >> 1) & 0xFE; // B
+      }
+      pctx.putImageData(imgData, 0, 0);
 
-      // ── Відзеркалення ──────────────────────────────
-      var TW = rect.width;
-      var TH = rect.height;
-      var MH = Math.ceil(TH * MIRROR_H_RATIO); // висота дзеркала
-
-      mirrorCanvas.width  = TW;
-      mirrorCanvas.height = MH;
-      mirrorCanvas.style.left = rect.left + 'px';
-      mirrorCanvas.style.top  = (rect.bottom + 4) + 'px'; // 4px відступ під текстом
-
-      mctx.clearRect(0, 0, TW, MH);
-      mctx.save();
-
-      // Перевертаємо — беремо нижню частину тексту знизу вгору
-      mctx.translate(0, MH);
-      mctx.scale(1, -1);
-
-      // Копіюємо blur-canvas у перевернутому вигляді
-      mctx.drawImage(
-        blurCanvas,
-        rect.left, rect.top, TW, MH,
-        0, 0, TW, MH
-      );
-
-      // Копіюємо SVG контур тексту
-      var gtSvg = document.getElementById('gt-svg');
-      var svgStr = new XMLSerializer().serializeToString(gtSvg);
-      var img = new Image();
-      img.onload = function () {
-        mctx.drawImage(img, 0, 0, TW, TH, 0, 0, TW, MH);
-      };
-      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr);
-
-      mctx.restore();
-
-      // Градієнт-маска: відображення зникає донизу
-      mctx.save();
-      var grad = mctx.createLinearGradient(0, 0, 0, MH);
-      grad.addColorStop(0,   'rgba(0,0,0,1)');
-      grad.addColorStop(1,   'rgba(0,0,0,0)');
-      mctx.globalCompositeOperation = 'destination-in';
-      mctx.fillStyle = grad;
-      mctx.fillRect(0, 0, TW, MH);
-      mctx.restore();
-      // ───────────────────────────────────────────────
-
-      requestAnimationFrame(drawBlur);
+      requestAnimationFrame(packAndDraw);
     }
 
     document.fonts.ready.then(function () {
       requestAnimationFrame(init);
-      setTimeout(drawBlur, 300);
+      setTimeout(packAndDraw, 300);
     });
 
     window.addEventListener("resize", function () { requestAnimationFrame(init); });
