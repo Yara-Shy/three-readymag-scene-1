@@ -10,114 +10,36 @@
 </head>
 <body>
 
-  <!-- Tubes cursor canvas -->
   <div id="canvas-wrap">
     <canvas id="canvas"></canvas>
   </div>
 
-  <!-- Packed canvas: тут зберігається упакований фон для SVG фільтра -->
-  <canvas id="packed-canvas" style="
-    position: fixed;
-    top: 0; left: 0;
+  <!-- Основний glass canvas (blur по формі тексту) -->
+  <canvas id="blur-canvas" style="
+    position: fixed; top: 0; left: 0;
     width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 5;
+    pointer-events: none; z-index: 5;
   "></canvas>
 
-  <!-- SVG фільтри liquid glass (з коду cubiq) -->
-  <svg width="0" height="0" color-interpolation-filters="sRGB" style="position:absolute">
+  <!-- Відблиск поверх (окремий canvas) -->
+  <canvas id="spec-canvas" style="
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 7;
+  "></canvas>
 
-    <filter id="pack-lower">
-      <feColorMatrix type="matrix" values="
-        0.00392156862745098 0 0 0 0
-        0 0.00392156862745098 0 0 0
-        0 0 0.00392156862745098 0 0
-        0 0 0 1 0"/>
-    </filter>
-
-    <filter id="liquid-glass-text" x="-5%" y="-5%" width="110%" height="110%">
-      <feComponentTransfer result="SourceBackground" in="SourceGraphic">
-        <feFuncR type="discrete" tableValues="0.000 0.008 0.016 0.024 0.031 0.039 0.047 0.055 0.063 0.071 0.079 0.087 0.094 0.102 0.110 0.118 0.126 0.134 0.142 0.150 0.157 0.165 0.173 0.181 0.189 0.197 0.205 0.213 0.220 0.228 0.236 0.244 0.252 0.260 0.268 0.276 0.283 0.291 0.299 0.307 0.315 0.323 0.331 0.339 0.346 0.354 0.362 0.370 0.378 0.386 0.394 0.402 0.409 0.417 0.425 0.433 0.441 0.449 0.457 0.465 0.472 0.480 0.488 0.496 0.504 0.512 0.520 0.528 0.535 0.543 0.551 0.559 0.567 0.575 0.583 0.591 0.598 0.606 0.614 0.622 0.630 0.638 0.646 0.654 0.661 0.669 0.677 0.685 0.693 0.701 0.709 0.717 0.724 0.732 0.740 0.748 0.756 0.764 0.772 0.780 0.787 0.795 0.803 0.811 0.819 0.827 0.835 0.843 0.850 0.858 0.866 0.874 0.882 0.890 0.898 0.906 0.913 0.921 0.929 0.937 0.945 0.953 0.961 0.969 0.976 0.984 0.992 1.000"/>
-        <feFuncG type="discrete" tableValues="0.000 0.008 0.016 0.024 0.031 0.039 0.047 0.055 0.063 0.071 0.079 0.087 0.094 0.102 0.110 0.118 0.126 0.134 0.142 0.150 0.157 0.165 0.173 0.181 0.189 0.197 0.205 0.213 0.220 0.228 0.236 0.244 0.252 0.260 0.268 0.276 0.283 0.291 0.299 0.307 0.315 0.323 0.331 0.339 0.346 0.354 0.362 0.370 0.378 0.386 0.394 0.402 0.409 0.417 0.425 0.433 0.441 0.449 0.457 0.465 0.472 0.480 0.488 0.496 0.504 0.512 0.520 0.528 0.535 0.543 0.551 0.559 0.567 0.575 0.583 0.591 0.598 0.606 0.614 0.622 0.630 0.638 0.646 0.654 0.661 0.669 0.677 0.685 0.693 0.701 0.709 0.717 0.724 0.732 0.740 0.748 0.756 0.764 0.772 0.780 0.787 0.795 0.803 0.811 0.819 0.827 0.835 0.843 0.850 0.858 0.866 0.874 0.882 0.890 0.898 0.906 0.913 0.921 0.929 0.937 0.945 0.953 0.961 0.969 0.976 0.984 0.992 1.000"/>
-        <feFuncB type="discrete" tableValues="0.000 0.008 0.016 0.024 0.031 0.039 0.047 0.055 0.063 0.071 0.079 0.087 0.094 0.102 0.110 0.118 0.126 0.134 0.142 0.150 0.157 0.165 0.173 0.181 0.189 0.197 0.205 0.213 0.220 0.228 0.236 0.244 0.252 0.260 0.268 0.276 0.283 0.291 0.299 0.307 0.315 0.323 0.331 0.339 0.346 0.354 0.362 0.370 0.378 0.386 0.394 0.402 0.409 0.417 0.425 0.433 0.441 0.449 0.457 0.465 0.472 0.480 0.488 0.496 0.504 0.512 0.520 0.528 0.535 0.543 0.551 0.559 0.567 0.575 0.583 0.591 0.598 0.606 0.614 0.622 0.630 0.638 0.646 0.654 0.661 0.669 0.677 0.685 0.693 0.701 0.709 0.717 0.724 0.732 0.740 0.748 0.756 0.764 0.772 0.780 0.787 0.795 0.803 0.811 0.819 0.827 0.835 0.843 0.850 0.858 0.866 0.874 0.882 0.890 0.898 0.906 0.913 0.921 0.929 0.937 0.945 0.953 0.961 0.969 0.976 0.984 0.992 1.000"/>
-      </feComponentTransfer>
-
-      <feComponentTransfer in="SourceGraphic">
-        <feFuncR type="discrete" tableValues="0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000"/>
-        <feFuncG type="discrete" tableValues="0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000"/>
-        <feFuncB type="discrete" tableValues="0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000 0.000 1.000"/>
-      </feComponentTransfer>
-      <feColorMatrix type="luminanceToAlpha"/>
-      <feGaussianBlur stdDeviation="1"/>
-      <feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 2 0"/>
-      <feComposite result="SourceMask"/>
-
-      <!-- Lighting -->
-      <feDiffuseLighting in="SourceMask" diffuseConstant="1" surfaceScale="100">
-        <feDistantLight azimuth="225" elevation="180"/>
-      </feDiffuseLighting>
-      <feColorMatrix type="luminanceToAlpha"/>
-      <feColorMatrix result="side-black" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.9 0"/>
-
-      <feDiffuseLighting in="SourceMask" diffuseConstant="0.52" surfaceScale="100">
-        <feDistantLight azimuth="45" elevation="180"/>
-      </feDiffuseLighting>
-      <feColorMatrix type="luminanceToAlpha"/>
-      <feColorMatrix result="side-yellow" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0"/>
-
-      <feDiffuseLighting in="SourceMask" diffuseConstant="1" surfaceScale="100">
-        <feDistantLight azimuth="315" elevation="180"/>
-      </feDiffuseLighting>
-      <feColorMatrix type="luminanceToAlpha"/>
-      <feColorMatrix result="side-red" values="0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0"/>
-
-      <feDiffuseLighting in="SourceMask" diffuseConstant="1" surfaceScale="100">
-        <feDistantLight azimuth="135" elevation="180"/>
-      </feDiffuseLighting>
-      <feColorMatrix type="luminanceToAlpha"/>
-      <feColorMatrix result="side-green" values="0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0"/>
-
-      <feBlend in="side-green" mode="screen"/>
-      <feBlend in="side-red" mode="screen"/>
-      <feBlend in="side-yellow" mode="screen"/>
-      <feBlend in="side-black" mode="multiply"/>
-
-      <feMorphology result="refraction-thickness" radius="5" operator="dilate"/>
-      <feGaussianBlur result="refraction-smoothness" stdDeviation="5"/>
-      <feComposite result="balls-map" in2="SourceMask" operator="in"/>
-      <feFlood result="normal-bg-color" flood-color="#808000"/>
-      <feComposite result="NormalMapFull" in="balls-map" in2="normal-bg-color" operator="over"/>
-
-      <feDisplacementMap result="displacement" in="SourceBackground" in2="NormalMapFull" scale="120" xChannelSelector="R" yChannelSelector="G"/>
-      <feGaussianBlur result="blur-out" stdDeviation="1" in="displacement"/>
-      <feComponentTransfer result="backdrop-processed">
-        <feFuncR type="linear" slope=".9" intercept="0.05"/>
-        <feFuncG type="linear" slope=".9" intercept="0.05"/>
-        <feFuncB type="linear" slope=".9" intercept="0.05"/>
-      </feComponentTransfer>
-      <feComposite result="balls-final" in2="SourceMask" operator="in"/>
-
-      <!-- Fresnel outline -->
-      <feMorphology in="SourceMask" result="stroke-width" radius="2"/>
-      <feGaussianBlur result="outline-smoothness" stdDeviation="1.5"/>
-      <feComposite result="bg-stroke-raw" in="balls-final" operator="out"/>
-      <feColorMatrix result="bg-stroke" values="2 0 0 0 0.1 0 2 0 0 0.1 0 0 2 0 0.1 0 0 0 0.5 0"/>
-      <feBlend result="outlined-balls" in="balls-final" mode="overlay"/>
-
-      <feDropShadow dx="0" dy="2" stdDeviation="8" flood-opacity=".4"/>
-    </filter>
-  </svg>
-
-  <!-- SVG текст з liquid glass -->
-  <svg id="gt-svg-outer" style="
-    position: relative;
-    z-index: 10;
-    overflow: visible;
+  <!-- SVG контур тексту -->
+  <svg id="gt-svg" style="
+    position: relative; z-index: 6;
+    display: block; overflow: visible;
   " fill="none" xmlns="http://www.w3.org/2000/svg">
     <text id="gt-text"
       font-family="'futura-pt', sans-serif"
       font-weight="700"
-      filter="url(#liquid-glass-text)">Design</text>
+      fill="rgba(255,255,255,0.0)"
+      stroke="rgba(255,255,255,0.5)"
+      stroke-width="1.5"
+      paint-order="stroke">Design</text>
   </svg>
 
   <script>
@@ -127,70 +49,117 @@
     var TEXT       = "Design";
     var FONT_STR   = "700 " + FONT_SIZE + "px 'futura-pt', sans-serif";
 
-    var srcCanvas    = document.getElementById('canvas');
-    var packedCanvas = document.getElementById('packed-canvas');
-    var pctx         = packedCanvas.getContext('2d');
+    var srcCanvas  = document.getElementById('canvas');
+    var blurCanvas = document.getElementById('blur-canvas');
+    var specCanvas = document.getElementById('spec-canvas');
+    var bctx = blurCanvas.getContext('2d');
+    var sctx = specCanvas.getContext('2d');
+
+    var TW, TH, BASE, textX, textY;
 
     function resize() {
-      packedCanvas.width  = window.innerWidth;
-      packedCanvas.height = window.innerHeight;
+      blurCanvas.width  = window.innerWidth;
+      blurCanvas.height = window.innerHeight;
+      specCanvas.width  = window.innerWidth;
+      specCanvas.height = window.innerHeight;
     }
     resize();
-    window.addEventListener('resize', resize);
+    window.addEventListener('resize', function() { resize(); init(); });
 
     function init() {
       var mc = document.createElement("canvas");
       var mx = mc.getContext("2d");
       mx.font = FONT_STR;
-      var TW   = Math.ceil(mx.measureText(TEXT).width) + Math.ceil(FONT_SIZE * 0.3);
-      var TH   = Math.ceil(FONT_SIZE * 1.6);
-      var BASE = Math.ceil(FONT_SIZE * 1.1);
+      TW   = Math.ceil(mx.measureText(TEXT).width) + Math.ceil(FONT_SIZE * 0.3);
+      TH   = Math.ceil(FONT_SIZE * 1.6);
+      BASE = Math.ceil(FONT_SIZE * 1.1);
 
-      var outerSvg = document.getElementById('gt-svg-outer');
-      outerSvg.setAttribute("width",   TW);
-      outerSvg.setAttribute("height",  TH);
-      outerSvg.setAttribute("viewBox", "0 0 " + TW + " " + TH);
+      var svg = document.getElementById("gt-svg");
+      svg.setAttribute("width",   TW);
+      svg.setAttribute("height",  TH);
+      svg.setAttribute("viewBox", "0 0 " + TW + " " + TH);
 
       var visText = document.getElementById("gt-text");
       visText.setAttribute("x",              "0");
       visText.setAttribute("y",              BASE);
       visText.setAttribute("font-size",      FONT_SIZE);
       visText.setAttribute("letter-spacing", LETTER_SPC);
-      // Колір тексту — упакований фон буде переданий через fill
-      visText.setAttribute("fill", "white");
+
+      // Позиція тексту на екрані
+      var rect = svg.getBoundingClientRect();
+      textX = rect.left;
+      textY = rect.top + BASE;
     }
 
-    // Пакує пікселі canvas у 7-bit формат для SVG фільтра
-    function packAndDraw() {
-      var W = packedCanvas.width;
-      var H = packedCanvas.height;
+    function drawTextMask(ctx) {
+      ctx.font = FONT_STR;
+      ctx.fillStyle = 'white';
+      ctx.letterSpacing = LETTER_SPC + 'px';
+      ctx.fillText(TEXT, textX, textY);
+    }
 
-      // Крок 1: малюємо інвертований tubes canvas у tmp
+    function draw() {
+      var W = blurCanvas.width;
+      var H = blurCanvas.height;
+
+      // ── 1. BLUR GLASS ───────────────────────────────
+      bctx.clearRect(0, 0, W, H);
+
+      // Розмите + інвертоване зображення tubes
       var tmp = document.createElement('canvas');
       tmp.width = W; tmp.height = H;
       var tctx = tmp.getContext('2d');
-      tctx.filter = 'invert(1)';
+      tctx.filter = 'blur(18px) invert(1)';
       try { tctx.drawImage(srcCanvas, 0, 0, W, H); } catch(e) {}
 
-      // Крок 2: пакуємо у 7-bit (ділимо кожен канал на 2 щоб вмістити маску в молодший біт)
-      var imgData = tctx.getImageData(0, 0, W, H);
-      var d = imgData.data;
-      for (var i = 0; i < d.length; i += 4) {
-        d[i]   = (d[i]   >> 1) & 0xFE; // R: верхні 7 біт, молодший = 0 (фон)
-        d[i+1] = (d[i+1] >> 1) & 0xFE; // G
-        d[i+2] = (d[i+2] >> 1) & 0xFE; // B
-      }
-      pctx.putImageData(imgData, 0, 0);
+      // Легкий світлий overlay для ефекту скла
+      tctx.filter = 'none';
+      tctx.fillStyle = 'rgba(255,255,255,0.08)';
+      tctx.fillRect(0, 0, W, H);
 
-      requestAnimationFrame(packAndDraw);
+      bctx.save();
+      bctx.drawImage(tmp, 0, 0);
+      // Маска по формі тексту
+      bctx.globalCompositeOperation = 'destination-in';
+      drawTextMask(bctx);
+      bctx.restore();
+
+      // ── 2. ВІДБЛИСК ─────────────────────────────────
+      sctx.clearRect(0, 0, W, H);
+      sctx.save();
+
+      // Малюємо форму тексту
+      drawTextMask(sctx);
+
+      // Gradient specular highlight
+      sctx.globalCompositeOperation = 'source-in';
+      var rect = document.getElementById('gt-svg').getBoundingClientRect();
+      var grad = sctx.createLinearGradient(
+        rect.left,          rect.top,
+        rect.left + TW * 0.6, rect.top + TH
+      );
+      grad.addColorStop(0,    'rgba(255,255,255,0.55)');
+      grad.addColorStop(0.3,  'rgba(255,255,255,0.15)');
+      grad.addColorStop(0.55, 'rgba(255,255,255,0.0)');
+      grad.addColorStop(1,    'rgba(255,255,255,0.07)');
+      sctx.fillStyle = grad;
+      sctx.fillRect(rect.left, rect.top, TW, TH);
+
+      sctx.restore();
+
+      requestAnimationFrame(draw);
     }
 
     document.fonts.ready.then(function () {
       requestAnimationFrame(init);
-      setTimeout(packAndDraw, 300);
+      setTimeout(function() {
+        // Оновлюємо координати після рендеру
+        var rect = document.getElementById('gt-svg').getBoundingClientRect();
+        textX = rect.left;
+        textY = rect.top + BASE;
+        draw();
+      }, 400);
     });
-
-    window.addEventListener("resize", function () { requestAnimationFrame(init); });
   })();
   </script>
 
