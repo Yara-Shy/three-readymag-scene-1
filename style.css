@@ -1,5 +1,10 @@
-body, html, #app {
+*, *::before, *::after {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html, #app {
   width: 100%;
   height: 100%;
 }
@@ -9,8 +14,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column; /* текст + дзеркало вертикально */
+  overflow: hidden;
 }
 
+/* Tubes canvas — інвертований */
 #canvas-wrap {
   position: fixed;
   top: 0; right: 0; bottom: 0; left: 0;
@@ -24,15 +32,25 @@ body {
   width: 100%; height: 100%;
 }
 
-#gt-wrap {
-  position: relative;
-  display: inline-block;
-  line-height: 1;
-  z-index: 10;
+/* Packed canvas для SVG фільтра */
+#packed-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 5;
 }
-#gt-mirror-wrap {
+
+/* SVG текст з liquid glass */
+#gt-svg-outer {
   position: relative;
-  z-index: 9;
-  margin-top: -20px; /* притискаємо до тексту */
-  opacity: 0.5;
+  z-index: 10;
+  overflow: visible;
+}
+
+/* Приховуємо всі службові SVG */
+body > svg {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
