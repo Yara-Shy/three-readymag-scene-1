@@ -30,3 +30,9 @@ body {
   line-height: 1;
   z-index: 10;
 }
+#gt-mirror-wrap {
+  position: relative;
+  z-index: 9;
+  margin-top: -20px; /* притискаємо до тексту */
+  opacity: 0.5;
+}
