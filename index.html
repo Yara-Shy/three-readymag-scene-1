@@ -3,21 +3,153 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+  <title></title>
   <!-- Adobe Fonts -->
   <link rel="stylesheet" href="https://use.typekit.net/yjp7kef.css" />
-
+  <link rel="stylesheet" href="https://use.typekit.net/phb7xgn.css" />
   <!-- Your CSS file -->
   <link rel="stylesheet" href="style.css" />
 
-  <title></title>
+  <style>
+    .gt-wrap {
+      position: relative;
+      display: inline-block;
+      line-height: 1;
+    }
+    .gt-refract {
+      position: absolute;
+      inset: 0;
+      backdrop-filter: blur(4px) url(#gt-filter);
+      -webkit-backdrop-filter: blur(4px) url(#gt-filter);
+      -webkit-mask: url(#gt-mask);
+      mask: url(#gt-mask);
+      background: rgba(255,255,255,0.04);
+    }
+    .gt-spec {
+      position: absolute;
+      inset: 0;
+      -webkit-mask: url(#gt-mask);
+      mask: url(#gt-mask);
+      background: linear-gradient(
+        150deg,
+        rgba(255,255,255,0.40) 0%,
+        rgba(255,255,255,0.10) 40%,
+        transparent 58%,
+        rgba(255,255,255,0.05) 100%
+      );
+      pointer-events: none;
+    }
+    .gt-svg {
+      display: block;
+      position: relative;
+    }
+  </style>
 </head>
-
 <body>
-  <canvas id="canvas"></canvas>
-  <p></p>
 
-  <!-- Your JS file -->
+  <!-- Tubes cursor canvas (твій JS використовує це) -->
+  <canvas id="canvas"></canvas>
+
+  <!-- SVG defs для ефекту скла -->
+  <svg id="gt-defs"
+       style="position:absolute;top:0;left:0;pointer-events:none;overflow:visible;width:0;height:0;"
+       xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <mask id="gt-mask" maskUnits="userSpaceOnUse">
+        <text id="gt-mask-text" fill="white"
+          font-family="'futura-pt', sans-serif"
+          font-weight="700">Yara Shylyk</text>
+      </mask>
+      <filter id="gt-filter" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+        <feImage id="gt-disp-img" result="map"/>
+        <feGaussianBlur in="map" stdDeviation="22" result="blurred"/>
+        <feComponentTransfer in="blurred" result="dmap">
+          <feFuncA type="discrete" tableValues="0 1 1 1 1 1 1 1 1"/>
+        </feComponentTransfer>
+        <feDisplacementMap in="SourceGraphic" in2="dmap" scale="36"
+          xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- Текст з ефектом скла замість звичайного <p> -->
+  <div class="gt-wrap" id="gt-wrap">
+    <div class="gt-refract"></div>
+    <div class="gt-spec"></div>
+    <svg class="gt-svg" id="gt-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <text id="gt-text"
+        font-family="'futura-pt', sans-serif"
+        font-weight="700"
+        fill="rgba(255,255,255,0.06)"
+        stroke="rgba(255,255,255,0.38)"
+        stroke-width="1"
+        paint-order="stroke">Yara Shylyk</text>
+    </svg>
+  </div>
+
+  <!-- Скрипт ефекту скла -->
+  <script>
+  (function () {
+    var FONT_SIZE  = 200;
+    var LETTER_SPC = 0.6;
+    var TEXT       = "Yara Shylyk";
+    var FONT_STR   = "700 " + FONT_SIZE + "px 'futura-pt', sans-serif";
+
+    function init() {
+      var mc = document.createElement("canvas");
+      var mx = mc.getContext("2d");
+      mx.font = FONT_STR;
+      var TW   = Math.ceil(mx.measureText(TEXT).width) + Math.ceil(FONT_SIZE * 0.3);
+      var TH   = Math.ceil(FONT_SIZE * 1.6);
+      var BASE = Math.ceil(FONT_SIZE * 1.1);
+
+      var wrap = document.getElementById("gt-wrap");
+      wrap.style.width  = TW + "px";
+      wrap.style.height = TH + "px";
+
+      var svg = document.getElementById("gt-svg");
+      svg.setAttribute("width", TW);
+      svg.setAttribute("height", TH);
+      svg.setAttribute("viewBox", "0 0 " + TW + " " + TH);
+
+      ["gt-text", "gt-mask-text"].forEach(function(id) {
+        var el = document.getElementById(id);
+        el.setAttribute("x", "0");
+        el.setAttribute("y", BASE);
+        el.setAttribute("font-size", FONT_SIZE);
+        el.setAttribute("letter-spacing", LETTER_SPC);
+      });
+
+      var defsSvg = document.getElementById("gt-defs");
+      defsSvg.setAttribute("width", TW);
+      defsSvg.setAttribute("height", TH);
+
+      var W = TW, H = TH;
+      var dispSvg =
+        "<svg xmlns='http://www.w3.org/2000/svg' width='" + W + "' height='" + H + "'>" +
+        "<rect x='0' y='0' width='" + (W/2) + "' height='" + (H/2) + "' fill='black'/>" +
+        "<rect x='" + (W/2) + "' y='" + (H/2) + "' width='" + (W/2) + "' height='" + (H/2) + "' fill='yellow'/>" +
+        "<rect x='0' y='" + (H/2) + "' width='" + (W/2) + "' height='" + (H/2) + "' fill='lime'/>" +
+        "<rect x='" + (W/2) + "' y='0' width='" + (W/2) + "' height='" + (H/2) + "' fill='red'/>" +
+        "</svg>";
+
+      var dispImg = document.getElementById("gt-disp-img");
+      dispImg.setAttribute("href", "data:image/svg+xml;utf8," + encodeURIComponent(dispSvg));
+      dispImg.setAttribute("x", "0"); dispImg.setAttribute("y", "0");
+      dispImg.setAttribute("width", W); dispImg.setAttribute("height", H);
+
+      var filter = document.getElementById("gt-filter");
+      filter.setAttribute("x", "0"); filter.setAttribute("y", "0");
+      filter.setAttribute("width", W); filter.setAttribute("height", H);
+    }
+
+    document.fonts.ready.then(function () { requestAnimationFrame(init); });
+    window.addEventListener("resize", function () { requestAnimationFrame(init); });
+  })();
+  </script>
+
+  <!-- Твій JS файл (tubes cursor) — завжди останній -->
   <script type="module" src="script.js"></script>
+
 </body>
 </html>
