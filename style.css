@@ -31,8 +31,37 @@ body {
   /* filter: invert(1) — ВИДАЛЕНО */
 }
 
+/* style.css — замінити стилі для gt-wrap */
 #gt-wrap {
   position: relative;
   z-index: 10;
-  isolation: isolate;       /* ← важливо для backdrop-filter */
+}
+
+.gt-refract {
+  position: absolute;
+  inset: 0;
+  -webkit-mask: url(#gt-mask);
+  mask: url(#gt-mask);
+  /* Імітація скла через градієнт замість backdrop-filter */
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.15) 0%,
+    rgba(255,255,255,0.03) 50%,
+    rgba(255,255,255,0.08) 100%
+  );
+}
+
+.gt-spec {
+  position: absolute;
+  inset: 0;
+  -webkit-mask: url(#gt-mask);
+  mask: url(#gt-mask);
+  background: linear-gradient(
+    150deg,
+    rgba(255,255,255,0.50) 0%,
+    rgba(255,255,255,0.15) 35%,
+    transparent 55%,
+    rgba(255,255,255,0.08) 100%
+  );
+  pointer-events: none;
 }
