@@ -14,25 +14,30 @@
     <canvas id="canvas"></canvas>
   </div>
 
+  <!-- Основний glass canvas (blur по формі тексту) -->
   <canvas id="blur-canvas" style="
-    position:fixed; top:0; left:0;
-    width:100%; height:100%;
-    pointer-events:none; z-index:5;
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 5;
   "></canvas>
 
+  <!-- Відблиск поверх (окремий canvas) -->
   <canvas id="spec-canvas" style="
-    position:fixed; top:0; left:0;
-    width:100%; height:100%;
-    pointer-events:none; z-index:7;
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 7;
   "></canvas>
 
-  <svg id="gt-svg" style="position:relative; z-index:6; display:block; overflow:visible;"
-       fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- SVG контур тексту -->
+  <svg id="gt-svg" style="
+    position: relative; z-index: 6;
+    display: block; overflow: visible;
+  " fill="none" xmlns="http://www.w3.org/2000/svg">
     <text id="gt-text"
       font-family="'futura-pt', sans-serif"
       font-weight="700"
       fill="rgba(255,255,255,0.0)"
-      stroke="rgba(255,255,255,0.55)"
+      stroke="rgba(255,255,255,0.5)"
       stroke-width="1.5"
       paint-order="stroke">Design</text>
   </svg>
@@ -62,32 +67,31 @@
     window.addEventListener('resize', function() { resize(); init(); });
 
     function init() {
-      var mc = document.createElement('canvas');
-      var mx = mc.getContext('2d');
+      var mc = document.createElement("canvas");
+      var mx = mc.getContext("2d");
       mx.font = FONT_STR;
       TW   = Math.ceil(mx.measureText(TEXT).width) + Math.ceil(FONT_SIZE * 0.3);
       TH   = Math.ceil(FONT_SIZE * 1.6);
       BASE = Math.ceil(FONT_SIZE * 1.1);
 
-      var svg = document.getElementById('gt-svg');
-      svg.setAttribute('width',   TW);
-      svg.setAttribute('height',  TH);
-      svg.setAttribute('viewBox', '0 0 ' + TW + ' ' + TH);
+      var svg = document.getElementById("gt-svg");
+      svg.setAttribute("width",   TW);
+      svg.setAttribute("height",  TH);
+      svg.setAttribute("viewBox", "0 0 " + TW + " " + TH);
 
-      var t = document.getElementById('gt-text');
-      t.setAttribute('x',              '0');
-      t.setAttribute('y',              BASE);
-      t.setAttribute('font-size',      FONT_SIZE);
-      t.setAttribute('letter-spacing', LETTER_SPC);
+      var visText = document.getElementById("gt-text");
+      visText.setAttribute("x",              "0");
+      visText.setAttribute("y",              BASE);
+      visText.setAttribute("font-size",      FONT_SIZE);
+      visText.setAttribute("letter-spacing", LETTER_SPC);
 
-      setTimeout(function() {
-        var r = document.getElementById('gt-svg').getBoundingClientRect();
-        textX = r.left;
-        textY = r.top + BASE;
-      }, 50);
+      // Позиція тексту на екрані
+      var rect = svg.getBoundingClientRect();
+      textX = rect.left;
+      textY = rect.top + BASE;
     }
 
-    function mask(ctx) {
+    function drawTextMask(ctx) {
       ctx.font = FONT_STR;
       ctx.fillStyle = 'white';
       ctx.letterSpacing = LETTER_SPC + 'px';
@@ -98,46 +102,48 @@
       var W = blurCanvas.width;
       var H = blurCanvas.height;
 
-      // ── Blur glass ──────────────────────────────────
+      // ── 1. BLUR GLASS ───────────────────────────────
       bctx.clearRect(0, 0, W, H);
 
-      // Крок 1: розмите + інвертоване зображення
+      // Розмите + інвертоване зображення tubes
       var tmp = document.createElement('canvas');
       tmp.width = W; tmp.height = H;
       var tctx = tmp.getContext('2d');
-      tctx.filter = 'blur(20px) invert(1)';
+      tctx.filter = 'blur(18px) invert(1)';
       try { tctx.drawImage(srcCanvas, 0, 0, W, H); } catch(e) {}
 
-      // Крок 2: легкий білий tint для скляності
+      // Легкий світлий overlay для ефекту скла
       tctx.filter = 'none';
-      tctx.fillStyle = 'rgba(255,255,255,0.07)';
+      tctx.fillStyle = 'rgba(255,255,255,0.08)';
       tctx.fillRect(0, 0, W, H);
 
-      // Крок 3: малюємо і вирізаємо по формі літер
       bctx.save();
       bctx.drawImage(tmp, 0, 0);
+      // Маска по формі тексту
       bctx.globalCompositeOperation = 'destination-in';
-      mask(bctx);
+      drawTextMask(bctx);
       bctx.restore();
 
-      // ── Відблиск ────────────────────────────────────
+      // ── 2. ВІДБЛИСК ─────────────────────────────────
       sctx.clearRect(0, 0, W, H);
       sctx.save();
 
-      mask(sctx);
+      // Малюємо форму тексту
+      drawTextMask(sctx);
 
+      // Gradient specular highlight
       sctx.globalCompositeOperation = 'source-in';
-      var r = document.getElementById('gt-svg').getBoundingClientRect();
+      var rect = document.getElementById('gt-svg').getBoundingClientRect();
       var grad = sctx.createLinearGradient(
-        r.left,             r.top,
-        r.left + TW * 0.65, r.top + TH
+        rect.left,          rect.top,
+        rect.left + TW * 0.6, rect.top + TH
       );
-      grad.addColorStop(0,    'rgba(255,255,255,0.60)');
-      grad.addColorStop(0.25, 'rgba(255,255,255,0.20)');
-      grad.addColorStop(0.5,  'rgba(255,255,255,0.0)');
-      grad.addColorStop(1,    'rgba(255,255,255,0.06)');
+      grad.addColorStop(0,    'rgba(255,255,255,0.55)');
+      grad.addColorStop(0.3,  'rgba(255,255,255,0.15)');
+      grad.addColorStop(0.55, 'rgba(255,255,255,0.0)');
+      grad.addColorStop(1,    'rgba(255,255,255,0.07)');
       sctx.fillStyle = grad;
-      sctx.fillRect(r.left, r.top, TW, TH);
+      sctx.fillRect(rect.left, rect.top, TW, TH);
 
       sctx.restore();
 
@@ -147,13 +153,13 @@
     document.fonts.ready.then(function () {
       requestAnimationFrame(init);
       setTimeout(function() {
-        var r = document.getElementById('gt-svg').getBoundingClientRect();
-        textX = r.left;
-        textY = r.top + BASE;
+        // Оновлюємо координати після рендеру
+        var rect = document.getElementById('gt-svg').getBoundingClientRect();
+        textX = rect.left;
+        textY = rect.top + BASE;
         draw();
       }, 400);
     });
-
   })();
   </script>
 
