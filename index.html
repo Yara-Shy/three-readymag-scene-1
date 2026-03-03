@@ -11,9 +11,11 @@
 <body>
 
   <!-- Tubes cursor canvas -->
-  <canvas id="canvas"></canvas>
+  <div id="canvas-wrap">
+    <canvas id="canvas"></canvas>
+  </div>
 
-  <!-- Blur canvas — малюється програмно поверх tubes -->
+  <!-- Blur canvas — малюється програмно по формі тексту -->
   <canvas id="blur-canvas" style="
     position: fixed;
     top: 0; left: 0;
@@ -22,7 +24,7 @@
     z-index: 5;
   "></canvas>
 
-  <!-- SVG маска для форми тексту -->
+  <!-- SVG маска для відблиску -->
   <svg id="gt-defs"
        style="position:absolute;top:0;left:0;pointer-events:none;overflow:visible;width:0;height:0;"
        xmlns="http://www.w3.org/2000/svg">
@@ -35,12 +37,13 @@
     </defs>
   </svg>
 
-  <!-- Текст (тільки SVG контур, blur йде з blur-canvas) -->
-  <div id="gt-wrap" style="position:relative; display:inline-block; line-height:1; z-index:10;">
+  <!-- Текст -->
+  <div id="gt-wrap">
 
-    <!-- Відблиск поверх -->
+    <!-- Відблиск -->
     <div id="gt-spec" style="
-      position:absolute; inset:0;
+      position: absolute;
+      inset: 0;
       -webkit-mask: url(#gt-mask);
       mask: url(#gt-mask);
       background: linear-gradient(
@@ -50,10 +53,11 @@
         transparent 58%,
         rgba(255,255,255,0.06) 100%
       );
-      pointer-events:none;
+      pointer-events: none;
       z-index: 2;
     "></div>
 
+    <!-- SVG контур тексту -->
     <svg id="gt-svg" style="display:block; position:relative; z-index:1;"
          fill="none" xmlns="http://www.w3.org/2000/svg">
       <text id="gt-text"
@@ -114,7 +118,6 @@
       defsSvg.setAttribute("height", TH);
     }
 
-    // Малює blur з tubes canvas по формі тексту
     function drawBlur() {
       var W = blurCanvas.width;
       var H = blurCanvas.height;
@@ -123,26 +126,24 @@
       var wrap = document.getElementById('gt-wrap');
       var rect = wrap.getBoundingClientRect();
 
-      // Зона тексту
-      var x = rect.left, y = rect.top, w = rect.width, h = rect.height;
+      // Тимчасовий canvas з розмитим зображенням
+      var tmp = document.createElement('canvas');
+      tmp.width  = W;
+      tmp.height = H;
+      var tctx = tmp.getContext('2d');
+      tctx.filter = 'blur(14px) invert(1)';
+      try { tctx.drawImage(srcCanvas, 0, 0, W, H); } catch(e) {}
 
+      // Малюємо розмите зображення
       bctx.save();
+      bctx.drawImage(tmp, 0, 0);
 
-      // Вирізаємо по прямокутнику тексту
-      bctx.beginPath();
-      bctx.rect(x, y, w, h);
-      bctx.clip();
-
-      // Blur + invert з tubes canvas
-      bctx.filter = 'blur(14px) invert(1)';
-      try {
-        bctx.drawImage(srcCanvas, 0, 0, W, H);
-      } catch(e) {}
-
-      // Напівпрозорий glass overlay
-      bctx.filter = 'none';
-      bctx.fillStyle = 'rgba(255,255,255,0.05)';
-      bctx.fillRect(x, y, w, h);
+      // Залишаємо пікселі тільки по формі тексту
+      bctx.globalCompositeOperation = 'destination-in';
+      bctx.font = FONT_STR;
+      bctx.fillStyle = 'white';
+      bctx.letterSpacing = LETTER_SPC + 'px';
+      bctx.fillText(TEXT, rect.left, rect.top + Math.ceil(FONT_SIZE * 1.1));
 
       bctx.restore();
 
@@ -158,6 +159,7 @@
   })();
   </script>
 
+  <!-- Твій JS файл -->
   <script type="module" src="script.js"></script>
 
 </body>
