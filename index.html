@@ -3,29 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Adobe Fonts -->
+  <title>Tubes Cursor</title>
   <link rel="stylesheet" href="https://use.typekit.net/yjp7kef.css" />
-
-  <!-- Your CSS file -->
+  <link rel="stylesheet" href="https://use.typekit.net/phb7xgn.css" />
   <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="https://use.typekit.net/phb7xgn.css">
-  </head>
-
+  <style>
+    body {
+      margin: 0; width: 100vw; height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      background:
+        radial-gradient(ellipse at 20% 50%, #c084fc99 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, #38bdf899 0%, transparent 50%),
+        radial-gradient(ellipse at 60% 80%, #fb923c99 0%, transparent 50%),
+        linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    }
+  </style>
+</head>
 <body>
-<style>
-  /* demo bg only */
-  body {
-    margin: 0; width: 100vw; height: 100vh;
-    display: flex; align-items: center; justify-content: center;
-    background:
-      radial-gradient(ellipse at 20% 50%, #c084fc99 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 20%, #38bdf899 0%, transparent 50%),
-      radial-gradient(ellipse at 60% 80%, #fb923c99 0%, transparent 50%),
-      linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  }
-   <title></title>
-</style>
- 
+  <canvas id="canvas"></canvas>
+  <p>Hello</p>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
